@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.*
 import editcom.vialsoft.mvipractice.ui.main.state.MainViewState
+import editcom.vialsoft.mvipractice.ui.model.BlogPost
+import editcom.vialsoft.mvipractice.ui.model.User
 import editcom.vialsoft.mvipractice.ui.util.AbsentLiveData
 
 class MainViewModel : ViewModel() {
@@ -20,7 +22,8 @@ class MainViewModel : ViewModel() {
     val getViewState: LiveData<MainViewState>
         get() = _viewState
 
-    val dataState: LiveData<MainViewState> = Transformations.switchMap(_stateEvent){ stateEvent ->
+    val getDataState: LiveData<MainViewState> = Transformations
+                .switchMap(_stateEvent){ stateEvent ->
 
         stateEvent?.let {
             handleResponse(stateEvent)
@@ -41,5 +44,30 @@ class MainViewModel : ViewModel() {
             }
 
         }
+    }
+
+    //get current view
+    fun getCurrentViewStateorNew() : MainViewState{
+        val value = getViewState.value?.let {
+            it
+        }?: MainViewState()
+        return value
+    }
+
+    //setters
+    fun setBlogList(blogPostList : List<BlogPost>){
+        val update = getCurrentViewStateorNew()
+        update.blogList = blogPostList
+        _viewState.value = update
+    }
+
+    fun setUser(user: User){
+        val update = getCurrentViewStateorNew()
+        update.user = user
+        _viewState.value = update
+    }
+
+    fun setStateEvent( event : MainStateEvent){
+        _stateEvent.value = event
     }
 }
