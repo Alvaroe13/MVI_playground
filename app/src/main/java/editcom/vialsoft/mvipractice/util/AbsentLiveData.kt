@@ -1,4 +1,4 @@
-package editcom.vialsoft.mvipractice.ui.util
+package editcom.vialsoft.mvipractice.util
 
 import androidx.lifecycle.LiveData
 

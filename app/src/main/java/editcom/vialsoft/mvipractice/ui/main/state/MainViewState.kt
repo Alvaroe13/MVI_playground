@@ -1,7 +1,7 @@
 package editcom.vialsoft.mvipractice.ui.main.state
 
-import editcom.vialsoft.mvipractice.ui.model.BlogPost
-import editcom.vialsoft.mvipractice.ui.model.User
+import editcom.vialsoft.mvipractice.model.BlogPost
+import editcom.vialsoft.mvipractice.model.User
 
 /**
  * This is the class that will work as a wrapper, meaning that every time we fire off an event to

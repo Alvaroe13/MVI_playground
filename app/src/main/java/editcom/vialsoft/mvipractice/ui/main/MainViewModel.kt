@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.*
 import editcom.vialsoft.mvipractice.ui.main.state.MainViewState
-import editcom.vialsoft.mvipractice.ui.model.BlogPost
-import editcom.vialsoft.mvipractice.ui.model.User
-import editcom.vialsoft.mvipractice.ui.util.AbsentLiveData
+import editcom.vialsoft.mvipractice.model.BlogPost
+import editcom.vialsoft.mvipractice.model.User
+import editcom.vialsoft.mvipractice.util.AbsentLiveData
 
 class MainViewModel : ViewModel() {
 

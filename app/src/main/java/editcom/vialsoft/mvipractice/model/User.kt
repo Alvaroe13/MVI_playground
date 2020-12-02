@@ -1,4 +1,4 @@
-package editcom.vialsoft.mvipractice.ui.model
+package editcom.vialsoft.mvipractice.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
