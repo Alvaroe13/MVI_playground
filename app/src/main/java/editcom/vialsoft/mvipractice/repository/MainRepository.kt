@@ -1,88 +1,57 @@
 package editcom.vialsoft.mvipractice.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import editcom.vialsoft.mvipractice.api.RetrofitGenerator
+import editcom.vialsoft.mvipractice.model.BlogPost
+import editcom.vialsoft.mvipractice.model.User
 import editcom.vialsoft.mvipractice.ui.main.state.MainViewState
-import editcom.vialsoft.mvipractice.util.ApiEmptyResponse
-import editcom.vialsoft.mvipractice.util.ApiErrorResponse
 import editcom.vialsoft.mvipractice.util.ApiSuccessResponse
 import editcom.vialsoft.mvipractice.util.DataState
+import editcom.vialsoft.mvipractice.util.GenericApiResponse
 
 private const val TAG = "MainRepository"
 
 object MainRepository {
 
     fun getBlogPosts(): LiveData<DataState<MainViewState>> {
-        return Transformations
-            .switchMap(RetrofitGenerator.apiConnection.getBlogPost()) { blogsFromApi ->
-                object : LiveData<DataState<MainViewState>>() {
-                    override fun onActive() {
-                        super.onActive()
 
-                        when (blogsFromApi) {
+         return object : NetworkBoundResource< List<BlogPost> , MainViewState>() {
 
-                            is ApiSuccessResponse -> {
-                                value = DataState.data(
-                                    data = MainViewState(blogList = blogsFromApi.body, null),
-                                    null
-                                )
-                                Log.d(TAG, "onActive: successful response")
-                            }
+             override fun successResponse(response: ApiSuccessResponse<List<BlogPost>>) {
+                 mediatorResult.value = DataState.data(
+                     MainViewState(
+                         blogList = response.body,
+                         null
+                     ) ,
+                     null
+                 )
+             }
 
-                            is ApiEmptyResponse -> {
-                                value =
-                                    DataState.error(message = "204 HTTP code. Response from server came empty")
-                                Log.d(TAG, "onActive: blogList empty response= ")
-                            }
+             override fun callToApiService(): LiveData<GenericApiResponse<List<BlogPost>>> {
+                return RetrofitGenerator.apiConnection.getBlogPost()
+             }
 
-                            is ApiErrorResponse -> {
-                                value = DataState.error(message = blogsFromApi.errorMessage)
-                                Log.d(TAG, "onActive: blogList Error= ")
-                            }
-                        }
-                    }
-
-                }
-            }
+         }.responseAsLiveData()
     }
 
     fun getUserInfo(userId: String): LiveData<DataState<MainViewState>> {
-        return Transformations
-            .switchMap(RetrofitGenerator.apiConnection.getUserInfo(userId)) { userInfoApiResponse ->
-                object : LiveData<DataState<MainViewState>>() {
-                    override fun onActive() {
-                        super.onActive()
 
-                        when (userInfoApiResponse) {
-
-                            is ApiSuccessResponse -> {
-                                value = DataState.data(
-                                    data = MainViewState(user = userInfoApiResponse.body),
-                                    null
-                                )
-                                Log.d(TAG, "onActive: successful response")
-                            }
-
-                            is ApiEmptyResponse -> {
-                                value =DataState.error(
-                                    message = "204 HTTP code. Response from server came empty"
-                                )
-                                Log.d(TAG, "onActive: user empty response= ")
-                            }
-
-                            is ApiErrorResponse -> {
-                                value = DataState.error(
-                                    message = userInfoApiResponse.errorMessage
-                                )
-                                Log.d(TAG, "onActive: user Error = ${userInfoApiResponse.errorMessage}")
-                            }
-                        }
-                    }
-
-                }
+        return object : NetworkBoundResource<User, MainViewState>(){
+            override fun successResponse(response: ApiSuccessResponse<User>) {
+                mediatorResult.value = DataState.data(
+                    MainViewState(
+                        user = response.body
+                    ),
+                    null
+                )
             }
+
+            override fun callToApiService(): LiveData<GenericApiResponse<User>> {
+                return RetrofitGenerator.apiConnection.getUserInfo(userId)
+            }
+
+        }.responseAsLiveData()
+
     }
 
 }
