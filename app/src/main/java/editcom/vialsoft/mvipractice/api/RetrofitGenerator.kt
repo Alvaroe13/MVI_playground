@@ -1,15 +1,17 @@
 package editcom.vialsoft.mvipractice.api
 
+import editcom.vialsoft.mvipractice.util.LiveDataCallAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitGenerator {
 
-    const val BASE_URL = "https://open-api.xyz"
+    const val BASE_URL = "https://open-api.xyz/"
 
-    val retrofitBuilder : Retrofit.Builder by lazy{
+    private val retrofitBuilder : Retrofit.Builder by lazy{
         Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
     }
 

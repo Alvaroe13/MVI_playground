@@ -9,7 +9,9 @@ import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.*
 import editcom.vialsoft.mvipractice.ui.main.state.MainViewState
 import editcom.vialsoft.mvipractice.model.BlogPost
 import editcom.vialsoft.mvipractice.model.User
+import editcom.vialsoft.mvipractice.repository.MainRepository
 import editcom.vialsoft.mvipractice.util.AbsentLiveData
+import editcom.vialsoft.mvipractice.util.DataState
 
 class MainViewModel : ViewModel() {
 
@@ -22,7 +24,7 @@ class MainViewModel : ViewModel() {
     val getViewState: LiveData<MainViewState>
         get() = _viewState
 
-    val getDataState: LiveData<MainViewState> = Transformations
+    val getDataState: LiveData<DataState<MainViewState>> = Transformations
                 .switchMap(_stateEvent){ stateEvent ->
 
         stateEvent?.let {
@@ -30,14 +32,14 @@ class MainViewModel : ViewModel() {
         }
 
     }
-    fun handleResponse(stateEvent: MainStateEvent) : LiveData<MainViewState> {
+    fun handleResponse(stateEvent: MainStateEvent) : LiveData<DataState<MainViewState>> {
         when (stateEvent) {
 
             is GetBlogPostEvent -> {
-                return AbsentLiveData.create()
+                return MainRepository.getBlogPosts()
             }
             is GetUserEvent -> {
-                return AbsentLiveData.create()
+                return MainRepository.getUserInfo(stateEvent.userId)
             }
             is None -> {
                 return AbsentLiveData.create()
@@ -47,7 +49,7 @@ class MainViewModel : ViewModel() {
     }
 
     //get current view
-    fun getCurrentViewStateorNew() : MainViewState{
+    fun getCurrentViewStateOrNew() : MainViewState{
         val value = getViewState.value?.let {
             it
         }?: MainViewState()
@@ -56,13 +58,13 @@ class MainViewModel : ViewModel() {
 
     //setters
     fun setBlogList(blogPostList : List<BlogPost>){
-        val update = getCurrentViewStateorNew()
+        val update = getCurrentViewStateOrNew()
         update.blogList = blogPostList
         _viewState.value = update
     }
 
     fun setUser(user: User){
-        val update = getCurrentViewStateorNew()
+        val update = getCurrentViewStateOrNew()
         update.user = user
         _viewState.value = update
     }

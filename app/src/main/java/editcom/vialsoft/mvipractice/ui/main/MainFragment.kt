@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import editcom.vialsoft.mvipractice.R
-import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent
-import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.*
+import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.GetBlogPostEvent
+import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.GetUserEvent
 
 private const val TAG = "MainFragDebug"
 
@@ -25,7 +24,6 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d(TAG, "onViewCreated: called")
         setHasOptionsMenu(true)
         viewModel = (activity as MainActivity).viewModel
         subscribeObservers()
@@ -49,7 +47,7 @@ class MainFragment : Fragment() {
     }
 
     private fun getUsers() {
-       viewModel.setStateEvent(GetUserEvent("1"))
+        viewModel.setStateEvent(GetUserEvent("1"))
     }
 
     private fun getBlogList() {
@@ -60,16 +58,28 @@ class MainFragment : Fragment() {
         Log.d(TAG, "subscribeObservers: called")
 
         viewModel.getDataState.observe(viewLifecycleOwner, { dataState ->
-            Log.d(TAG, "subscribeObservers: called")
+            Log.d(TAG, "subscribeObservers: called, dataState= ${dataState}")
 
-            dataState.blogList?.let { blogPostList ->
-                //post from server
-                viewModel.setBlogList(blogPostList)
+            dataState.data?.let { mainViewState ->
+
+                mainViewState.blogList?.let { blogPostList ->
+                    //post from server
+                    viewModel.setBlogList(blogPostList)
+                }
+
+                mainViewState.user?.let { user ->
+                    //user info from server
+                    viewModel.setUser(user)
+                }
+
             }
 
-            dataState.user?.let { user ->
-                //user info from server
-                viewModel.setUser(user)
+            dataState.isLoading.let {
+                Log.d(TAG, "subscribeObservers: loading $it")
+            }
+
+            dataState.errorMessage?.let { errorMessage ->
+                Log.d(TAG, "subscribeObservers: error message= ${errorMessage}")
             }
 
         })
