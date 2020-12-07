@@ -1,5 +1,6 @@
 package editcom.vialsoft.mvipractice.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -7,12 +8,15 @@ import androidx.fragment.app.Fragment
 import editcom.vialsoft.mvipractice.R
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.GetBlogPostEvent
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.GetUserEvent
+import java.lang.ClassCastException
 
 private const val TAG = "MainFragDebug"
 
 class MainFragment : Fragment() {
 
     lateinit var viewModel: MainViewModel
+
+    lateinit var dataStateListener: DataStateListener
 
 
     override fun onCreateView(
@@ -74,13 +78,8 @@ class MainFragment : Fragment() {
 
             }
 
-            dataState.isLoading.let {
-                Log.d(TAG, "subscribeObservers: loading $it")
-            }
-
-            dataState.errorMessage?.let { errorMessage ->
-                Log.d(TAG, "subscribeObservers: error message= ${errorMessage}")
-            }
+            //handle loading progress and error essage to show in MainActivity
+            dataStateListener.onDataChange(dataState)
 
         })
 
@@ -98,5 +97,15 @@ class MainFragment : Fragment() {
             }
 
         })
+    }
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            dataStateListener = context as DataStateListener
+        }catch ( e: ClassCastException){
+            Log.d(TAG, "onAttach: Error binding listener to Fragment")
+        }
     }
 }

@@ -3,12 +3,16 @@
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import editcom.vialsoft.mvipractice.R
+import editcom.vialsoft.mvipractice.util.DataState
+import kotlinx.android.synthetic.main.activity_main.*
 
-private const val TAG = "MaiActDebug"
+ private const val TAG = "MaiActDebug"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DataStateListener {
 
     lateinit var viewModel : MainViewModel
 
@@ -31,6 +35,38 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, MainFragment() , "MainFragment")
             .commit()
+    }
+
+    override fun onDataChange(dataState: DataState<*>?) {
+         handleDataState(dataState)
+    }
+
+    private fun handleDataState(dataState: DataState<*>?) {
+
+        dataState?.let {
+
+            it.errorMessage?.let {message->
+                showToast(message)
+            }
+
+            it.isLoading.let { loadingState->
+                progressBarState(loadingState)
+            }
+
+        }
+    }
+
+    private fun progressBarState(isLoading: Boolean) {
+        if (isLoading){
+            progress_bar.visibility = View.VISIBLE
+        }else{
+            progress_bar.visibility = View.INVISIBLE
+        }
+
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this , message, Toast.LENGTH_SHORT).show()
     }
 
 }
