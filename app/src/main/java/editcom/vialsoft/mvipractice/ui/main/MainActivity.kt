@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import editcom.vialsoft.mvipractice.R
+import editcom.vialsoft.mvipractice.databinding.ActivityMainBinding
 import editcom.vialsoft.mvipractice.util.Resource
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -16,10 +17,13 @@ class MainActivity : AppCompatActivity(), DataStateListener {
 
     lateinit var viewModel : MainViewModel
 
+    private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initViewModel()
         inflateMainFragment()
@@ -63,9 +67,9 @@ class MainActivity : AppCompatActivity(), DataStateListener {
 
     private fun progressBarState(isLoading: Boolean) {
         if (isLoading){
-            progress_bar.visibility = View.VISIBLE
+            binding.progressSomething.visibility = View.VISIBLE
         }else{
-            progress_bar.visibility = View.INVISIBLE
+            binding.progressSomething.visibility = View.INVISIBLE
         }
 
     }

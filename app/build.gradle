@@ -9,6 +9,11 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+    buildFeatures{
+        viewBinding true  //view binding
+    }
+
+
     defaultConfig {
         applicationId "editcom.vialsoft.mvipractice"
         minSdkVersion 24

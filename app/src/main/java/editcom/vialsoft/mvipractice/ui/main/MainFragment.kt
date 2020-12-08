@@ -5,32 +5,33 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import editcom.vialsoft.mvipractice.R
+import editcom.vialsoft.mvipractice.databinding.FragmentMainLayoutBinding
+import editcom.vialsoft.mvipractice.model.BlogPost
+import editcom.vialsoft.mvipractice.ui.main.adapter.BlogPostListAdapter
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.GetBlogPostEvent
 import editcom.vialsoft.mvipractice.ui.main.state.MainStateEvent.GetUserEvent
+import editcom.vialsoft.mvipractice.util.RecyclerViewDecoration
 import java.lang.ClassCastException
 
 private const val TAG = "MainFragDebug"
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapter.Interaction {
 
-    lateinit var viewModel: MainViewModel
-
-    lateinit var dataStateListener: DataStateListener
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.list_single_layout, container, false)
-    }
+    private lateinit var viewModel: MainViewModel
+    private lateinit var dataStateListener: DataStateListener
+    private lateinit var blogAdapter: BlogPostListAdapter
+    private lateinit var binding: FragmentMainLayoutBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding = FragmentMainLayoutBinding.bind(view)
         setHasOptionsMenu(true)
         viewModel = (activity as MainActivity).viewModel
         subscribeObservers()
+        initRecyclerView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -48,6 +49,17 @@ class MainFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun initRecyclerView() {
+        Log.d(TAG, "initRecyclerView: triggered")
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(activity)
+            val paddingTopDecoration = RecyclerViewDecoration(30)
+            addItemDecoration(paddingTopDecoration)
+            blogAdapter = BlogPostListAdapter(this@MainFragment)
+            adapter = blogAdapter
+        }
     }
 
     private fun triggerGetUsers() {
@@ -69,7 +81,7 @@ class MainFragment : Fragment() {
      * to be processed, once that's done, that data will be fetched by the "getViewState" observable
      * and set into the UI
      */
-    private fun dataStateObserver(){
+    private fun dataStateObserver() {
         Log.d(TAG, "dataStateObserver: called")
 
         viewModel.getResource.observe(viewLifecycleOwner, { dataState ->
@@ -82,7 +94,7 @@ class MainFragment : Fragment() {
             //handle data
             dataState.data?.let { event ->
 
-                event.getContentIfNotHandled()?.let {mainViewState ->
+                event.getContentIfNotHandled()?.let { mainViewState ->
 
                     mainViewState.blogList?.let { blogPostList ->
                         //post from server
@@ -103,16 +115,17 @@ class MainFragment : Fragment() {
      * This is the obervavle that will bring the data alreadyt process from the ViewModel ready to
      * be set in th eUI
      */
-    private fun viewStateObserver(){
+    private fun viewStateObserver() {
         Log.d(TAG, "viewStateObserver: called")
 
         viewModel.getViewState.observe(viewLifecycleOwner, { viewState ->
 
             Log.d(TAG, "viewStateObserver: voewState= $viewState")
 
-            viewState.blogList?.let {
+            viewState.blogList?.let { blogPostList ->
                 //info from server
-                Log.d(TAG, "subscribeObservers: getViewState blogpost= ${it.size}")
+                Log.d(TAG, "subscribeObservers: getViewState blogpost= ${blogPostList.size}")
+                // blogAdapter.submitList(blogPostList)
             }
 
             viewState.user?.let {
@@ -127,8 +140,13 @@ class MainFragment : Fragment() {
         super.onAttach(context)
         try {
             dataStateListener = context as DataStateListener
-        }catch ( e: ClassCastException){
+        } catch (e: ClassCastException) {
             Log.d(TAG, "onAttach: Error binding listener to Fragment")
         }
+    }
+
+    override fun onItemSelected(position: Int, item: BlogPost) {
+        Log.d(TAG, "onItemSelected: clicked $position")
+        Log.d(TAG, "onItemSelected: post clicked title = ${item.title}")
     }
 }
