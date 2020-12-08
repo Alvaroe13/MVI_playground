@@ -2,6 +2,7 @@ package editcom.vialsoft.mvipractice.util
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
+ * (This one was created by mitch for handling screen rotation
  */
 class Event<T>(private val content: T) {
 

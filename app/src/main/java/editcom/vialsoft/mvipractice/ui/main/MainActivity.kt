@@ -43,13 +43,18 @@ class MainActivity : AppCompatActivity(), DataStateListener {
 
     private fun handleDataState(dataState: DataState<*>?) {
 
-        dataState?.let {
+        dataState?.let { dataStateVal ->
 
-            it.errorMessage?.let {message->
-                showToast(message)
+
+            dataStateVal.errorMessage?.let {event->
+
+                event.getContentIfNotHandled()?.let{message ->
+                    showToast(message)
+                }
+
             }
 
-            it.isLoading.let { loadingState->
+            dataStateVal.isLoading.let { loadingState->
                 progressBarState(loadingState)
             }
 

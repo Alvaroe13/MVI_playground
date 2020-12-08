@@ -64,23 +64,27 @@ class MainFragment : Fragment() {
         viewModel.getDataState.observe(viewLifecycleOwner, { dataState ->
             Log.d(TAG, "subscribeObservers: called, dataState= ${dataState}")
 
-            dataState.data?.let { mainViewState ->
-
-                mainViewState.blogList?.let { blogPostList ->
-                    //post from server
-                    viewModel.setBlogList(blogPostList)
-                }
-
-                mainViewState.user?.let { user ->
-                    //user info from server
-                    viewModel.setUser(user)
-                }
-
-            }
-
-            //handle loading progress and error essage to show in MainActivity
+            //handle loading progress and error message to show in MainActivity
             dataStateListener.onDataChange(dataState)
 
+
+            //handle data
+            dataState.data?.let { event ->
+
+                event.getContentIfNotHandled()?.let {mainViewState ->
+
+                    mainViewState.blogList?.let { blogPostList ->
+                        //post from server
+                        viewModel.setBlogList(blogPostList)
+                    }
+
+                    mainViewState.user?.let { user ->
+                        //user info from server
+                        viewModel.setUser(user)
+                    }
+
+                }
+            }
         })
 
         viewModel.getViewState.observe(viewLifecycleOwner, { viewState ->
@@ -98,7 +102,6 @@ class MainFragment : Fragment() {
 
         })
     }
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

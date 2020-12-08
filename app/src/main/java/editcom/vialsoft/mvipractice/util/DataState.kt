@@ -6,15 +6,15 @@ package editcom.vialsoft.mvipractice.util
  * coming from the server.
  */
 data class DataState<T>(
-    var data: T? = null,
+    var data: Event<T>? = null,
     var isLoading: Boolean = false,
-    var errorMessage: String? = null
+    var errorMessage: Event<String>? = null
 ) {
 
     companion object {
 
         fun <T> data(data: T? = null, errorMessage: String?): DataState<T> {
-            return DataState(data = data, isLoading = false, errorMessage = errorMessage)
+            return DataState(data = Event.dataEvent(data), isLoading = false, errorMessage = Event.messageEvent(errorMessage))
         }
 
         fun <T> loading(isLoading: Boolean): DataState<T> {
@@ -22,7 +22,7 @@ data class DataState<T>(
         }
 
         fun <T> error(message: String): DataState<T> {
-            return DataState(data = null, isLoading = false, errorMessage = message)
+            return DataState(data = null, isLoading = false, errorMessage = Event(message))
         }
 
     }
