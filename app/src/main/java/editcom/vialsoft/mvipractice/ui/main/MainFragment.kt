@@ -41,28 +41,39 @@ class MainFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menuGetUsers -> {
-                getUsers()
+                triggerGetUsers()
             }
             R.id.menuGetBlogs -> {
-                getBlogList()
+                triggerGetBlogList()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getUsers() {
+    private fun triggerGetUsers() {
         viewModel.setStateEvent(GetUserEvent("1"))
     }
 
-    private fun getBlogList() {
+    private fun triggerGetBlogList() {
         viewModel.setStateEvent(GetBlogPostEvent())
     }
 
     private fun subscribeObservers() {
-        Log.d(TAG, "subscribeObservers: called")
+        Log.d(TAG, "subscribeObservers: triggered")
+        dataStateObserver()
+        viewStateObserver()
+    }
 
-        viewModel.getDataState.observe(viewLifecycleOwner, { dataState ->
-            Log.d(TAG, "subscribeObservers: called, dataState= ${dataState}")
+    /**
+     * This observable will fetch the data from the server and will send it back to the ViewModel
+     * to be processed, once that's done, that data will be fetched by the "getViewState" observable
+     * and set into the UI
+     */
+    private fun dataStateObserver(){
+        Log.d(TAG, "dataStateObserver: called")
+
+        viewModel.getResource.observe(viewLifecycleOwner, { dataState ->
+            Log.d(TAG, "subscribeObservers: called, dataState= $dataState")
 
             //handle loading progress and error message to show in MainActivity
             dataStateListener.onDataChange(dataState)
@@ -86,9 +97,18 @@ class MainFragment : Fragment() {
                 }
             }
         })
+    }
+
+    /**
+     * This is the obervavle that will bring the data alreadyt process from the ViewModel ready to
+     * be set in th eUI
+     */
+    private fun viewStateObserver(){
+        Log.d(TAG, "viewStateObserver: called")
 
         viewModel.getViewState.observe(viewLifecycleOwner, { viewState ->
-            Log.d(TAG, "subscribeObservers: called")
+
+            Log.d(TAG, "viewStateObserver: voewState= $viewState")
 
             viewState.blogList?.let {
                 //info from server

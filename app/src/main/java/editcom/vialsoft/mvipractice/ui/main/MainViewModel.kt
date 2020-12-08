@@ -11,7 +11,7 @@ import editcom.vialsoft.mvipractice.model.BlogPost
 import editcom.vialsoft.mvipractice.model.User
 import editcom.vialsoft.mvipractice.repository.MainRepository
 import editcom.vialsoft.mvipractice.util.AbsentLiveData
-import editcom.vialsoft.mvipractice.util.DataState
+import editcom.vialsoft.mvipractice.util.Resource
 
 class MainViewModel : ViewModel() {
 
@@ -21,23 +21,19 @@ class MainViewModel : ViewModel() {
     //this one will be the observable containing the data to be shown in the ui
     private val _stateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
 
-    val getViewState: LiveData<MainViewState>
-        get() = _viewState
 
-    val getDataState: LiveData<DataState<MainViewState>> = Transformations
-                .switchMap(_stateEvent){ stateEvent ->
+    /**
+     * This one is the communication with the server   (this direction) ------->
+     */
+    fun handleResponse(stateEvent: MainStateEvent) : LiveData<Resource<MainViewState>> {
 
-        stateEvent?.let {
-            handleResponse(stateEvent)
-        }
-
-    }
-    fun handleResponse(stateEvent: MainStateEvent) : LiveData<DataState<MainViewState>> {
         when (stateEvent) {
 
+            //this gets fire off when user request to get the blog post from the server
             is GetBlogPostEvent -> {
                 return MainRepository.getBlogPosts()
             }
+            //this gets fire off when user request the user info from the server
             is GetUserEvent -> {
                 return MainRepository.getUserInfo(stateEvent.userId)
             }
@@ -69,7 +65,26 @@ class MainViewModel : ViewModel() {
         _viewState.value = update
     }
 
+    /**
+     * this is the triggering element of the whole process coming from the UI
+     */
     fun setStateEvent( event : MainStateEvent){
         _stateEvent.value = event
     }
+
+    /////////////////////////////// GETTERS ///////////////////////////////////////
+
+    //observable1
+    val getViewState: LiveData<MainViewState>
+        get() = _viewState
+
+    //observable2
+    val getResource: LiveData<Resource<MainViewState>> = Transformations
+        .switchMap(_stateEvent){ stateEvent ->
+
+            stateEvent?.let {
+                handleResponse(stateEvent)
+            }
+
+        }
 }

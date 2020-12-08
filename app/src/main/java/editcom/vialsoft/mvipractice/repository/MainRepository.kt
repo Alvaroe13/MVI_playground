@@ -6,19 +6,19 @@ import editcom.vialsoft.mvipractice.model.BlogPost
 import editcom.vialsoft.mvipractice.model.User
 import editcom.vialsoft.mvipractice.ui.main.state.MainViewState
 import editcom.vialsoft.mvipractice.util.ApiSuccessResponse
-import editcom.vialsoft.mvipractice.util.DataState
+import editcom.vialsoft.mvipractice.util.Resource
 import editcom.vialsoft.mvipractice.util.GenericApiResponse
 
 private const val TAG = "MainRepository"
 
 object MainRepository {
 
-    fun getBlogPosts(): LiveData<DataState<MainViewState>> {
+    fun getBlogPosts(): LiveData<Resource<MainViewState>> {
 
          return object : NetworkBoundResource< List<BlogPost> , MainViewState>() {
 
              override fun successResponse(response: ApiSuccessResponse<List<BlogPost>>) {
-                 mediatorResult.value = DataState.data(
+                 mediatorResult.value = Resource.data(
                      MainViewState(
                          blogList = response.body,
                          null
@@ -34,11 +34,11 @@ object MainRepository {
          }.responseAsLiveData()
     }
 
-    fun getUserInfo(userId: String): LiveData<DataState<MainViewState>> {
+    fun getUserInfo(userId: String): LiveData<Resource<MainViewState>> {
 
         return object : NetworkBoundResource<User, MainViewState>(){
             override fun successResponse(response: ApiSuccessResponse<User>) {
-                mediatorResult.value = DataState.data(
+                mediatorResult.value = Resource.data(
                     MainViewState(
                         user = response.body
                     ),
