@@ -4,9 +4,10 @@ import editcom.vialsoft.mvipractice.model.BlogPost
 import editcom.vialsoft.mvipractice.model.User
 
 /**
- * This is the class that will work as a wrapper, meaning that every time we fire off an event to
- * the network, we go through this class as it encapsulates the models we have in this view
- * (user , BlogPost)
+ * This class is meant to hold the info to be display in the view. In this project we print a list
+ * of blogpost and the user info on top of the list.
+ * NOTE: If we were to show more info we just need to create another data class with such values
+ * and add it to this class.
  */
 data class MainViewState(
     var blogList: List<BlogPost>? = null,
