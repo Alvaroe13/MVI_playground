@@ -1,8 +1,8 @@
 package editcom.vialsoft.mvipractice.ui.main
 
-import editcom.vialsoft.mvipractice.util.Resource
+import editcom.vialsoft.mvipractice.util.DataState
 
 interface DataStateListener {
 
-    fun onDataChange(resource : Resource<*>?)
+    fun onDataChange(dataState : DataState<*>?)
 }

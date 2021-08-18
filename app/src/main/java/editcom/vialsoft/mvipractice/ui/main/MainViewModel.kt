@@ -11,7 +11,7 @@ import editcom.vialsoft.mvipractice.model.BlogPost
 import editcom.vialsoft.mvipractice.model.User
 import editcom.vialsoft.mvipractice.repository.MainRepository
 import editcom.vialsoft.mvipractice.util.AbsentLiveData
-import editcom.vialsoft.mvipractice.util.Resource
+import editcom.vialsoft.mvipractice.util.DataState
 
 class MainViewModel : ViewModel() {
 
@@ -28,7 +28,7 @@ class MainViewModel : ViewModel() {
     /**
      * "switchMap" gets triggered when whenever "getResource" is triggered as well
      */
-    val dataState: LiveData<Resource<MainViewState>> = Transformations
+    val dataState: LiveData<DataState<MainViewState>> = Transformations
         .switchMap(_stateEvent) { stateEvent ->
 
             stateEvent?.let {
@@ -43,7 +43,7 @@ class MainViewModel : ViewModel() {
      * triggered with any event executed from the ui, this one makes the request to dataSource
      * and return such value
      */
-     private fun handleResponse(stateEvent: MainStateEvent): LiveData<Resource<MainViewState>> {
+     private fun handleResponse(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
         return when (stateEvent) {
             //this gets fire off when user request to get the blog post from the server
             is GetBlogPostEvent -> {

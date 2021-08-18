@@ -80,9 +80,8 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
         viewModel.dataState.observe(viewLifecycleOwner, { dataState ->
             Log.d(TAG, "subscribeObservers: called, dataState= $dataState")
 
-            //handle loading progress and error message to show in MainActivity
-            dataStateListener.onDataChange(dataState)
 
+            //Handle data <T>
             dataState.data?.let { event ->
 
                 event.getContentIfNotHandled()?.let { mainViewState ->
@@ -97,6 +96,10 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
 
                 }
             }
+
+
+            //handle loading progress and error message to show in MainActivity
+            dataStateListener.onDataChange(dataState)
         })
     }
 

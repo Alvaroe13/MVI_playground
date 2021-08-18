@@ -8,8 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import editcom.vialsoft.mvipractice.R
 import editcom.vialsoft.mvipractice.databinding.ActivityMainBinding
-import editcom.vialsoft.mvipractice.util.Resource
-import kotlinx.android.synthetic.main.activity_main.*
+import editcom.vialsoft.mvipractice.util.DataState
 
  private const val TAG = "MaiActDebug"
 
@@ -41,13 +40,13 @@ class MainActivity : AppCompatActivity(), DataStateListener {
             .commit()
     }
 
-    override fun onDataChange(resource: Resource<*>?) {
-         handleDataState(resource)
+    override fun onDataChange(dataState: DataState<*>?) {
+         handleDataState(dataState)
     }
 
-    private fun handleDataState(resource: Resource<*>?) {
+    private fun handleDataState(dataState: DataState<*>?) {
 
-        resource?.let { dataStateVal ->
+        dataState?.let { dataStateVal ->
 
 
             dataStateVal.errorMessage?.let {event->

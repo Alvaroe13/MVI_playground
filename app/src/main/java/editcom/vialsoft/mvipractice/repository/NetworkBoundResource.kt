@@ -15,10 +15,10 @@ private const val TAG = "boundDebug"
 
 abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
 
-    protected val mediatorResult = MediatorLiveData<Resource<ViewStateType>>()
+    protected val mediatorResult = MediatorLiveData<DataState<ViewStateType>>()
 
     init {
-        mediatorResult.value = Resource.loading(true)
+        mediatorResult.value = DataState.loading(true)
 
         GlobalScope.launch(IO) {
             delay(1000L) //just for testing and show progressbar
@@ -59,7 +59,7 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
     }
 
     fun errorMessage(message : String){
-        mediatorResult.value = Resource.error(message)
+        mediatorResult.value = DataState.error(message)
     }
     abstract fun successResponse(response: ApiSuccessResponse<ResponseObject>)
 
@@ -68,5 +68,5 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
     /**
      * just cast MediatorLiveData var to LiveData
      */
-    fun responseAsLiveData() = mediatorResult as LiveData<Resource<ViewStateType>>
+    fun responseAsLiveData() = mediatorResult as LiveData<DataState<ViewStateType>>
 }
