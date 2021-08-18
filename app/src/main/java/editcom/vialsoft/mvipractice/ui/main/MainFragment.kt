@@ -41,18 +41,13 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menuGetUsers -> {
-                triggerGetUsers()
-            }
-            R.id.menuGetBlogs -> {
-                triggerGetBlogList()
-            }
+            R.id.menuGetUsers -> triggerGetUsers()
+            R.id.menuGetBlogs -> triggerGetBlogList()
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun initRecyclerView() {
-        Log.d(TAG, "initRecyclerView: triggered")
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
             val paddingTopDecoration = RecyclerViewDecoration(30)
@@ -71,18 +66,16 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
     }
 
     private fun subscribeObservers() {
-        Log.d(TAG, "subscribeObservers: triggered")
         dataStateObserver()
         viewStateObserver()
     }
 
     /**
-     * This observable will fetch the data from the server and will send it back to the ViewModel
+     * This observable will fetch the data from the dataSource and will send it back to the ViewModel
      * to be processed, once that's done, that data will be fetched by the "getViewState" observable
      * and set into the UI
      */
     private fun dataStateObserver() {
-        Log.d(TAG, "dataStateObserver: called")
 
         viewModel.dataState.observe(viewLifecycleOwner, { dataState ->
             Log.d(TAG, "subscribeObservers: called, dataState= $dataState")
@@ -90,19 +83,15 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
             //handle loading progress and error message to show in MainActivity
             dataStateListener.onDataChange(dataState)
 
-
-            //handle data
             dataState.data?.let { event ->
 
                 event.getContentIfNotHandled()?.let { mainViewState ->
 
                     mainViewState.blogList?.let { blogPostList ->
-                        //post from server
                         viewModel.setBlogList(blogPostList)
                     }
 
                     mainViewState.user?.let { user ->
-                        //user info from server
                         viewModel.setUser(user)
                     }
 
@@ -112,25 +101,23 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
     }
 
     /**
-     * This is the obervavle that will bring the data alreadyt process from the ViewModel ready to
+     * This is the observable that will bring the data already process from the ViewModel ready to
      * be set in th eUI
      */
     private fun viewStateObserver() {
-        Log.d(TAG, "viewStateObserver: called")
-
         viewModel.getViewState.observe(viewLifecycleOwner, { viewState ->
 
-            Log.d(TAG, "viewStateObserver: voewState= $viewState")
+            Log.d(TAG, "viewStateObserver: viewState= $viewState")
 
             viewState.blogList?.let { blogPostList ->
-                //info from server
-                Log.d(TAG, "subscribeObservers: getViewState blogpost= ${blogPostList.size}")
+                //TODO feed recyclerVie with it
+                Log.d(TAG, "viewStateObserver: list size= ${blogPostList.size}")
                 // blogAdapter.submitList(blogPostList)
             }
 
             viewState.user?.let {
-                //info from server
-                Log.d(TAG, "subscribeObservers: getViewState user= ${it.username}")
+                //TODO set it in the ui
+                Log.d(TAG, "viewStateObserver: getViewState user= ${it.username}")
             }
 
         })
