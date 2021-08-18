@@ -18,48 +18,63 @@ class MainViewModel : ViewModel() {
     //this one is to keep track of what view to show in the ui
     private val _viewState: MutableLiveData<MainViewState> = MutableLiveData()
 
-    //this one will be the observable containing the data to be shown in the ui
+    /**
+     * this will be the one called whenever we want to execute an event from the ui
+     */
     private val _stateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
+    val getViewState: LiveData<MainViewState>
+        get() = _viewState
+
+    /**
+     * "switchMap" gets triggered when whenever "getResource" is triggered as well
+     */
+    val dataState: LiveData<Resource<MainViewState>> = Transformations
+        .switchMap(_stateEvent) { stateEvent ->
+
+            stateEvent?.let {
+                handleResponse(stateEvent)
+            }
+
+        }
+
 
 
     /**
-     * This one is the communication with the server   (this direction) ------->
+     * triggered with any event executed from the ui, this one makes the request to dataSource
+     * and return such value
      */
-    fun handleResponse(stateEvent: MainStateEvent) : LiveData<Resource<MainViewState>> {
-
-        when (stateEvent) {
-
+     private fun handleResponse(stateEvent: MainStateEvent): LiveData<Resource<MainViewState>> {
+        return when (stateEvent) {
             //this gets fire off when user request to get the blog post from the server
             is GetBlogPostEvent -> {
-                return MainRepository.getBlogPosts()
+                MainRepository.getBlogPosts()
             }
             //this gets fire off when user request the user info from the server
             is GetUserEvent -> {
-                return MainRepository.getUserInfo(stateEvent.userId)
+                MainRepository.getUserInfo(stateEvent.userId)
             }
             is None -> {
-                return AbsentLiveData.create()
+                AbsentLiveData.create()
             }
-
         }
     }
 
     //get current view
-    fun getCurrentViewStateOrNew() : MainViewState{
+    private fun getCurrentViewStateOrNew(): MainViewState {
         val value = getViewState.value?.let {
             it
-        }?: MainViewState()
+        } ?: MainViewState()
         return value
     }
 
     //setters
-    fun setBlogList(blogPostList : List<BlogPost>){
+    fun setBlogList(blogPostList: List<BlogPost>) {
         val update = getCurrentViewStateOrNew()
         update.blogList = blogPostList
         _viewState.value = update
     }
 
-    fun setUser(user: User){
+    fun setUser(user: User) {
         val update = getCurrentViewStateOrNew()
         update.user = user
         _viewState.value = update
@@ -68,23 +83,8 @@ class MainViewModel : ViewModel() {
     /**
      * this is the triggering element of the whole process coming from the UI
      */
-    fun setStateEvent( event : MainStateEvent){
+    fun setStateEvent(event: MainStateEvent) {
         _stateEvent.value = event
     }
 
-    /////////////////////////////// GETTERS ///////////////////////////////////////
-
-    //observable1
-    val getViewState: LiveData<MainViewState>
-        get() = _viewState
-
-    //observable2
-    val getResource: LiveData<Resource<MainViewState>> = Transformations
-        .switchMap(_stateEvent){ stateEvent ->
-
-            stateEvent?.let {
-                handleResponse(stateEvent)
-            }
-
-        }
 }

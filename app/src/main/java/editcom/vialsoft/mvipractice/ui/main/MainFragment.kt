@@ -84,7 +84,7 @@ class MainFragment : Fragment(R.layout.fragment_main_layout), BlogPostListAdapte
     private fun dataStateObserver() {
         Log.d(TAG, "dataStateObserver: called")
 
-        viewModel.getResource.observe(viewLifecycleOwner, { dataState ->
+        viewModel.dataState.observe(viewLifecycleOwner, { dataState ->
             Log.d(TAG, "subscribeObservers: called, dataState= $dataState")
 
             //handle loading progress and error message to show in MainActivity
