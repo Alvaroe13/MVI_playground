@@ -1,8 +1,7 @@
 package editcom.vialsoft.mvipractice.ui.main.state
 
 /**
- * This class is also a wrapper for the event that we will fire off and this classes are going to be
- * the only possible outcomes
+ * State event is the one firing off events to viewmodel (MVI is an event oriented arch)
  */
 sealed class MainStateEvent {
 
